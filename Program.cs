@@ -1,3 +1,5 @@
+using checkpoint.Interfaces;
+using checkpoint.Services;
 using checkpoint4.Interfaces;
 using checkpoint4.Services;
 
@@ -12,18 +14,9 @@ namespace checkpoint4
             // Add services to the container.
             builder.Services.AddControllers();
 
-            //// Adiciona a configuração do CORS
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowAll", policy =>
-            //    {
-            //        policy.AllowAnyOrigin()
-            //              .AllowAnyMethod()
-            //              .AllowAnyHeader();
-            //    });
-            //});
 
-            builder.Services.AddHttpClient<IConversionRate, ExchangeRateService>(); // Adiciona o serviço com HttpClient
+            builder.Services.AddHttpClient<IConversionRate, ConversionRate>(); // Adiciona o serviço com HttpClient
+            builder.Services.AddScoped<IExchangeRateService, ExchangeRateService>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -31,7 +24,11 @@ namespace checkpoint4
                 c.DescribeAllParametersInCamelCase();
             });
 
+            builder.Services.Configure<ExchangeRateApiSettings>(builder.Configuration.GetSection("ExchangeRateApi"));
+
             var app = builder.Build();
+
+            //var exchangeRateUrl = app.Configuration["ExchangeRateApi:BaseUrl"];
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -40,19 +37,8 @@ namespace checkpoint4
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Currency Conversion API v1"));
             }
 
-            // Adiciona o uso do CORS com a política definida
-            //app.UseCors("AllowAll");
-
             app.UseHttpsRedirection();
-
-            //app.UseAuthorization();
-
             app.MapControllers();
-
-            // Corrigindo a adição de URLs separando-as corretamente.
-            //app.Urls.Add("http://localhost:5002");
-            //app.Urls.Add("https://localhost:5003");
-
             app.Run();
         }
     }

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using checkpoint.HttpObjetcs;
 
 namespace checkpoint4.Interfaces
 {
     public interface IConversionRate
     {
-        Task<decimal> GetUsdToBrlRateAsync();
+        Task<ExchangeRateResponse> GetUsdRateAsync();
     }
 }
